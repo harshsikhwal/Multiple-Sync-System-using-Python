@@ -1,0 +1,64 @@
+Client Documentation
+Linux implementation
+
+
+1. Get initial configuration. Read config.ini and set the parameters in constants.py
+    * If not present, then issue error. Don't exit, but rather initialize connection data to default
+
+2. Read the connection data, and initialize connection objects. We maintain a list of connections
+    * If file not present, then issue error and exit
+    * If data format is incorrect, throw parse error and exit
+
+3. For every connection file: Validate IP file
+    * If not present, issue error and proceed ahead. This sets a flag that will be used by scp module.
+    * If present, then validate present files, the local host path, the data integrity. Also map the local and remote files in the system
+
+
+4. Get the parameters and check the parameters,
+    a. If auto sync is on
+        * start an infinite loop and get the timer data, to sync data
+    b. If auto sync if off
+        * just iterate over all objects and sync
+
+5. Before starting sync, make a ping request to all the servers.
+    * If ping fails, remove from connection object list and set error
+
+6. If ping is successful, start ssh and scp connection, and start sync process.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+While connection:
+
+    * Get initial ping, check if server is reachable
+    * if reachable, then connect scp and start transfer                 -- ?!?
+
+
+Windows is not working for now................... scp should be enabled, so better create a server-socket and use ftp..
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Get logger data, the format:
+
+*Error  Date    :   Value
+*Info   Date    :   Value
+
+
+write logs to a particular file with the PID assigned
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Exact Sync flag:
+
+Implement in future:
+
+Sync exact directories. If local has a file removed, it will delete the file on the server too?
+
+
+For server to listen to multiple ports: we need to have multiple sockets, each socket dedicated per port...
+
+DDoS attack
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------

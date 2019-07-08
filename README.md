@@ -1,1 +1,3 @@
-# Multiple-Sync-System-using-Python
+Requires open-ssh server
+
+
