@@ -4,6 +4,8 @@
 from constants import *
 from utils import *
 from connection import *
+import sys
+from logger import *
 
 
 def initialize_config_file():
@@ -19,25 +21,29 @@ def initialize_config_file():
 
 
 def initialize_connections():
-    file = open("../config/connection_info.ini", "r")
-    for line in file:
-        if line[0] == '#' or line[0] == ' ' or line[0] == '' or line[0] == '\n' or line[0] == '\r':
-            continue
-        # add a check for ip address
 
-        user_tuple = (line[line.find(';') + 1: line.find(',')], line[line.find(','):line.find('\n')])
+    if not os.path.exists("../config/connection_info.ini"):
+        info_logger.write_info('e', "Connection info file is absent!\nAborting")
+        error_logger.write_info('e', "Connection info file is absent!\nAborting")
+        sys.exit()
 
-        print(user_tuple)
+    else:
+        file = open("../config/connection_info.ini", "r")
+        for line in file:
+            if line[0] == '#' or line[0] == ' ' or line[0] == '' or line[0] == '\n' or line[0] == '\r':
+                continue
 
-        connection_data[line[0:line.find(';')]] = user_tuple
+            info_logger.write_info('i', "Initializing connection with IP address\t" + line[0:line.find(';')])
+            connection_obj = Connection(line[0:line.find(';')],
+                                        line[line.find(';') + 1:line.find(';')],
+                                        line[line.find(','):line.find('\n')])
 
-        print(connection_data)
+            if connection_obj.check_ping() == 0:
 
-        connectionObj = Connection(line[0:line.find(';')], line[line.find(';') + 1:line.find(',')],
-                                   line[line.find(','):line.find('\n')])
-        # if connectionObj.check_ping() == 0:
-        # print host is up
-        # else:
-        # print host is down
-        
-        connectionList.append(connectionObj)
+                info_logger.write_info('i', "Host " + line[0:line.find(';')] + " is reachable!!")
+            else:
+                info_logger.write_info('w', "Host " + line[0:line.find(';')] + " is unreachable!")
+                error_logger.write_info('w', "Host " + line[0:line.find(';')] + " is unreachable!")
+
+
+            connectionList.append(connection_obj)
