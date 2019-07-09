@@ -29,7 +29,7 @@ error_logger.write_error('e', " Rewriting something without opening Error")
 info_logger.file_fp.close()
 error_logger.file_fp.close()
 
-print ("\n Finished \n")
+print ("\n Finished !! \n")
 
 # open log file
 
