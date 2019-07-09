@@ -8,8 +8,6 @@ from datetime import datetime
 class Logger:
     # Read config file and initialize global constants
 
-    # file_descriptor = open()
-
     def __init__(self, file_type):
 
         global error_log
@@ -32,8 +30,6 @@ class Logger:
 
         self.file_fp = open(log_path + self.log_file, "a")
 
-
-
     # Why a different function: Because we can give the date as well
 
     def write_info(self, file_type, data):
@@ -49,10 +45,6 @@ class Logger:
         else:
             return
 
-        # file_descriptor = open(log_path + self.log_file, "a")
-        # file_descriptor.write(log_type + datetime.now().strftime(' %d/%m/%Y %H:%M:%S ') + data + "\n")
-        # file_descriptor.close()
-
         self.file_fp.write(log_type + datetime.now().strftime(' %d/%m/%Y %H:%M:%S ') + data + "\n")
 
     def write_error(self, file_type, data):
@@ -66,6 +58,4 @@ class Logger:
         else:
             return
 
-        # file_descriptor = open(log_path + self.log_file, "a")
         self.file_fp.write(log_type + datetime.now().strftime(" %d/%m/%Y %H:%M:%S ") + data + "\n")
-        # file_descriptor.close()
