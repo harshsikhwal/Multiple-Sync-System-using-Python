@@ -1,4 +1,4 @@
-# Multiple Host Sync System using Python 
+# Multiple Host Sync using Python 
 
 This codebase can be used to sync multiple files across various systems. This uses SCP to transfer files, therefore the receiving system should have SSH and SCP service enabled.
 
