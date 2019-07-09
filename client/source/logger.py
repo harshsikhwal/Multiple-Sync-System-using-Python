@@ -8,29 +8,27 @@ from datetime import datetime
 class Logger:
     # Read config file and initialize global constants
 
-    log_file = ""
-    # file_descriptor = open()
-
     def __init__(self, file_type):
 
         global error_log
         global info_log
         # global file_descriptor
         global log_path
-        global log_file
+        self.log_file = ""
+        self.file_fp = None
 
         if file_type == 'e':
             error_log = "scp_error." + str(os.getpid()) + ".log"
-            log_file = error_log
+            self.log_file = error_log
 
         elif file_type == 'i':
             info_log = "scp." + str(os.getpid()) + ".log"
-            log_file = info_log
+            self.log_file = info_log
 
         if not os.path.exists(log_path):
             os.makedirs(log_path)
 
-
+        self.file_fp = open(log_path + self.log_file, "a")
 
     # Why a different function: Because we can give the date as well
 
@@ -47,9 +45,7 @@ class Logger:
         else:
             return
 
-        file_descriptor = open(log_path + log_file, "a")
-        file_descriptor.write(log_type + datetime.now().strftime(' %d/%m/%Y %H:%M:%S ') + data + "\n")
-        file_descriptor.close()
+        self.file_fp.write(log_type + datetime.now().strftime(' %d/%m/%Y %H:%M:%S ') + data + "\n")
 
     def write_error(self, file_type, data):
 
@@ -62,6 +58,4 @@ class Logger:
         else:
             return
 
-        file_descriptor = open(log_path + log_file, "a")
-        file_descriptor.write(log_type + datetime.now().strftime(" %d/%m/%Y %H:%M:%S ") + data + "\n")
-        file_descriptor.close()
+        self.file_fp.write(log_type + datetime.now().strftime(" %d/%m/%Y %H:%M:%S ") + data + "\n")
