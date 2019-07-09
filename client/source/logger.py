@@ -35,7 +35,7 @@ class Logger:
     def write_info(self, file_type, data):
 
         if file_type == 'i':
-            log_type = "Info, "
+            log_type = "Info,  "
         elif file_type == 'e':
             log_type = "Error, "
         elif file_type == 'w':
