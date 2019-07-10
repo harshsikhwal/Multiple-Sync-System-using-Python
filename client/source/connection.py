@@ -1,6 +1,8 @@
 import paramiko
 from scp import SCPClient
+import re
 import os
+from logger import *
 
 
 # class for connection. Has IP, user id and pass
@@ -28,6 +30,12 @@ class Connection:
     def check_ping(self):
         response = os.system("ping -c 1 " + self.ip_address)
         return response
+
+    def check_for_valid_ip(self, ip_address):
+        if re.match('^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$',ip_address):
+            info_logger.write_info('i', '{} is in correct format \n'.format(ip_address))
+        else:
+            error_logger.write_info('e', 'Format of {} is incorrect, please verify\n'.format(ip_address))
 
     # ssh = create_sshclient(server, port, user, password)
     # scp = SCPClient(ssh.get_transport())
