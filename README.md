@@ -53,15 +53,17 @@ So to add values, the user can directly add the value for keys('ip_address','use
 
 This file is a mapper file, that maps the ip address with the source and destination address. The name of the file corresponds to the ip address with which we are mapping the stored source and destination address. For example, to map a particular source and destination address for ip address 127.34.45.22, we name the file as 127.34.45.22.json<br />
 The file contains the source and destination in json format:
-<br />[<br />
-&nbsp;&nbsp;&nbsp;&nbsp;{<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"src"      : "source folder/file path1",<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"dest"      : "source folder/file path1",<br />
-&nbsp;&nbsp;&nbsp;&nbsp;},<br />
-&nbsp;&nbsp;&nbsp;&nbsp;{<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"src"      : "source folder/file path2",<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"dest"      : "source folder/file path2",<br />
-&nbsp;&nbsp;&nbsp;&nbsp;}<br />
-] <br />
+```json5
+[
+    {
+        "src"      : "source folder/file path1",
+        "dest"      : "source folder/file path1"
+    },
+    {
+        "src"      : "source folder/file path2",
+        "dest"      : "source folder/file path2"
+    }
+]
+```
 
 So to add values, the user can directly add the value for keys('src','dest') and the corresponding format within { }
