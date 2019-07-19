@@ -1,0 +1,10 @@
+[
+    {
+        "src"   : "source folder/file path1",
+        "dest"  : "source folder/file path1"
+    },
+    {
+        "src"   : "source folder/file path2",
+        "dest"  : "source folder/file path2"
+    }
+]
