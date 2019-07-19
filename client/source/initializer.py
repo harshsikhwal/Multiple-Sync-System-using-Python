@@ -2,58 +2,95 @@
 # Also creates basic configuration
 
 from constants import *
-from utils import *
+import configparser
+import io
+import threading
 from connection import *
 import sys
 from logger import *
 import re
+import json
 
 
 def initialize_config_file():
-    file = open("../config/config.ini", "r")
-    for line in file:
-        if line[0] == '#' or line[0] == ' ' or line[0] == '' or line[0] == '\n' or line[0] == '\r':
-            continue
-        config_data[line[0:line.find('=')]] = line[line.find('=') + 1:]
 
-        # print("key = " + key)
-        # print("value = " + line[line.find('=') + 1: ])
-        print(line)
+    if not os.path.exists("../config/config.ini"):
+        print("Config file does not exist")
+        sys.exit(-1)
+
+    config = configparser.ConfigParser(allow_no_value=True)
+    config.read("../config/config.ini")
+
+    constant.number_of_connections = config['DEFAULT']['number_of_connections']
+    constant.log_path = config['DEFAULT']['log_path']
+    constant.address_mapper_path = config['DEFAULT']['address_mapper_path']
+    constant.connection_info_path = config['DEFAULT']['connection_info_path']
+
 
 
 def initialize_connections():
 
-    if not os.path.exists("../config/connection_info.ini"):
-        info_logger.write_info('e', "Connection info file is absent!\nAborting")
-        error_logger.write_info('e', "Connection info file is absent!\nAborting")
+    if not os.path.exists(constant.connection_info_path):
+        constant.info_logger.write_info('e', "Connection info file is absent!\nAborting")
+        constant.error_logger.write_info('e', "Connection info file is absent!\nAborting")
         sys.exit()
 
     else:
-        connection_file = open("../config/connection_info.ini", "r")
-        for line in connection_file:
-            if line[0] == '#' or line[0] == ' ' or line[0] == '' or line[0] == '\n' or line[0] == '\r':
-                continue
+        with open(constant.connection_info_path, "r") as file:
+            connection_file = json.load(file)
 
-            if re.match('(\d+|\.)+;\w+;\w+', line):
-                line = line.split(';')
-                info_logger.write_info('i', 'Format of {} is correct proceeding forward \n'.format(line))
-                info_logger.write_info('i', "Initializing connection with IP address\t" + line[0])
-                if '\n' in line[2]:
-                    re.sub('\n', '', line[2])
-                connection_obj = Connection(line[0], line[1], line[2])
+        for obj in connection_file:
+            connection_obj = Connection(obj['ip_address'], obj['user'], obj['passkey'])
 
-                connection_obj.check_for_valid_ip(line[0])
+            connection_obj.check_for_valid_ip()
 
-                if connection_obj.check_ping() == 0:
+            if connection_obj.check_ping() == 0:
+                constant.info_logger.write_info('i', "Host {} is reachable!!".format(obj['ip_address']))
+                connection_obj.is_up = True
 
-                    info_logger.write_info('i', "Host {} is reachable!!".format(line[0]))
-                else:
-                    info_logger.write_info('w', "Host {} is unreachable!".format(line[0]))
-                    error_logger.write_info('w', "Host {} is unreachable!".format(line[0]))
-
-                connectionList.append(connection_obj)
             else:
-                info_logger.write_info('e', "Format of {} is incorrect should be format ip;username;password\nAborting"
-                                       .format(line))
-                error_logger.write_info('e', "Connection info file is absent!\nAborting")
-                sys.exit()
+                connection_obj.is_up = False
+                constant.info_logger.write_info('w', "Host {} is unreachable!".format(obj['ip_address']))
+                constant.error_logger.write_info('w', "Host {} is unreachable!".format(obj['ip_address']))
+            constant.connection_list.append(connection_obj)
+
+
+def reader_thread_task(connection_ob, i):
+    i = str(i)
+    constant.info_logger.write_info('w', "Starting Thread {}".format(i))
+    if not os.path.exists("../config/path_mapper/{}".format(connection_ob.ip_address) + ".json"):
+        constant.info_logger.write_info('e', "Path Mapper file is absent!\nAborting Thread " + i)
+        constant.error_logger.write_info('e', "Path Mapper file is absent!\nAborting Thread " + i)
+        return
+    else:
+        constant.info_logger.write_info('i', "[Thread " + i + "]Path Mapper file is present!\tReading data")
+        with open("../config/path_mapper/{}".format(connection_ob.ip_address) + ".json", "r") as file:
+            path_mapper_file = json.load(file)
+        # Handle exception here
+        for obj in path_mapper_file:
+            loc = Location(obj['src'], obj['dest'])
+            if not os.path.exists(obj['src']):
+                constant.info_logger.write_info('w', "[Thread " + i + "]Source Path {} does not exist!".format(obj['src']))
+                constant.error_logger.write_info('w', "[Thread " + i + "]Source Path {} does not exist!".format(obj['src']))
+                loc.source_exist = False
+            else:
+                constant.info_logger.write_info('i', "[Thread " + i + "]Source Path {} exist!".format(obj['src']))
+                loc.source_exist = True
+            connection_ob.src_dest.append(loc)
+    constant.info_logger.write_info('w', "Ending Thread {}".format(i))
+
+
+def initialize_src_dest():
+    Thread_List = []
+    for i in range(0, len(constant.connection_list)):
+        t = threading.Thread(target=reader_thread_task, args=(constant.connection_list[i], i), name=i)
+        t.setDaemon(True)
+        Thread_List.append(t)
+        # t.start()
+        # t.join()
+
+    for t in Thread_List:
+        t.start()
+
+    for t in Thread_List:
+        t.join()

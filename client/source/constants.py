@@ -1,26 +1,26 @@
-# variables defined here
+# Global variables defined here
 
-# global dict config_data["number_of_connections"] = 0
+class Constant:
 
-config_data = {}
+    number_of_connections = None
 
-user_tuple = ()
+    # logs section-+
 
-# logs section
+    log_path = ""
 
-# info_logger = None
+    address_mapper_path = ""
 
-# error_logger = None
+    connection_data = {}
 
-log_path = "../logs/"
+    date_time = ""
+
+    connection_list = []
+
+    info_logger = None
+
+    error_logger = None
+
+    connection_info_path = ""
 
 
-# log_fullpath = ""
-
-# connection data
-
-connection_data = {}
-
-date_time = ""
-
-connectionList = []
+constant = Constant()

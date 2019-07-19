@@ -39,9 +39,9 @@ Windows is not working for now................... scp should be enabled, so bett
 
 Get logger data, the format:
 
-*Error  Date    :   Value
-*Info   Date    :   Value
-
+Error,  Date    :   Value
+Info,   Date    :   Value
+Warn,   Date    :   Value
 
 write logs to a particular file with the PID assigned
 

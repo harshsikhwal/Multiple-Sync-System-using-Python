@@ -1,9 +1,7 @@
 import os
-
-from constants import *
-
 from datetime import datetime
 
+from constants import *
 
 
 class Logger:
@@ -14,7 +12,7 @@ class Logger:
 
     def __init__(self, file_type):
         # global file_descriptor
-        global log_path
+
         self.log_file = ""
         self.file_fp = None
 
@@ -22,12 +20,12 @@ class Logger:
             self.log_file = "scp_error." + str(os.getpid()) + ".log"
 
         elif file_type == 'i':
-            self.log_file  = "scp." + str(os.getpid()) + ".log"
+            self.log_file = "scp." + str(os.getpid()) + ".log"
 
-        if not os.path.exists(log_path):
-            os.makedirs(log_path)
+        if not os.path.exists(constant.log_path):
+            os.makedirs(constant.log_path)
 
-        self.file_fp = open(log_path + self.log_file, "a")
+        self.file_fp = open(constant.log_path + self.log_file, "a")
 
     # Why a different function: Because we can give the date as well
 
@@ -54,11 +52,10 @@ class Logger:
         elif file_type == 'w':
             log_type = "Warn,\t"
 
+        elif file_type == 'i':
+            log_type = ""
+
         else:
             return
 
         self.file_fp.write(log_type + datetime.now().strftime("\t%d/%m/%Y %H:%M:%S\t") + data + "\n")
-
-info_logger = Logger('i')
-
-error_logger = Logger('e')

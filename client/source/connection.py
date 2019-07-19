@@ -1,8 +1,16 @@
-import paramiko
-from scp import SCPClient
 import re
-import os
+import paramiko
 from logger import *
+
+
+class Location:
+    source = ""
+    destination = ""
+    source_exist = False
+
+    def __init__(self, src, dest):
+        self.source = src
+        self.destination = dest
 
 
 # class for connection. Has IP, user id and pass
@@ -14,6 +22,8 @@ class Connection:
     mapper_path = ""
     ssh_port = 22
     client = paramiko.SSHClient()
+    is_up = False
+    src_dest = []
 
     def __init__(self, ip_address, user, passkey):
         self.ip_address = ip_address
@@ -21,21 +31,25 @@ class Connection:
         self.passkey = passkey
 
     def create_sshclient(self):
-        # client = paramiko.SSHClient()
         self.client.load_system_host_keys()
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         self.client.connect(self.ip_address, self.ssh_port, self.user, self.passkey)
-        # return client
 
     def check_ping(self):
         response = os.system("ping -c 1 " + self.ip_address)
         return response
 
-    def check_for_valid_ip(self, ip_address):
-        if re.match('^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$',ip_address):
-            info_logger.write_info('i', '{} is in correct format \n'.format(ip_address))
+    def check_for_valid_ip(self):
+        if re.match('^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$', self.ip_address):
+            constant.info_logger.write_info('i', '{} is in correct format'.format(self.ip_address))
+            self.is_up = True
         else:
-            error_logger.write_info('e', 'Format of {} is incorrect, please verify\n'.format(ip_address))
+            constant.error_logger.write_info('e', 'Format of {} is incorrect, please verify'.format(self.ip_address))
+            self.is_up = False
+
+    # def print_connection_info(self):
 
     # ssh = create_sshclient(server, port, user, password)
     # scp = SCPClient(ssh.get_transport())
+
+# def transfer():
