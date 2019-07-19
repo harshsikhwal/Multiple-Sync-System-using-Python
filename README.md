@@ -37,14 +37,14 @@ This file contains the connection info, basically the ip_address, username and p
 ```json
 [
     {
-        "ip_address" : "x.x.x.x",
-        "user" : "username1",
-        "passkey"  : "passcode1"
+        "ip_address"  : "x.x.x.x",
+        "user"        : "username1",
+        "passkey"     : "passcode1"
     },
     {
-        "ip_address" : "y.y.y.y",
-        "user" : "username2",
-        "passkey"  : "passcode2"
+        "ip_address"  : "y.y.y.y",
+        "user"        : "username2",
+        "passkey"     : "passcode2"
      }
 ] 
 ```
