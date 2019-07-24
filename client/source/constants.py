@@ -1,5 +1,6 @@
 # Global variables defined here
 
+
 class Constant:
 
     number_of_connections = None
@@ -21,6 +22,8 @@ class Constant:
     error_logger = None
 
     connection_info_path = ""
+
+    scp_connections_list = []
 
 
 constant = Constant()

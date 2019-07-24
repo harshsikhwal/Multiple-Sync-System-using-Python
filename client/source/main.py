@@ -4,6 +4,7 @@ from initializer import *
 
 from logger import *
 
+from connection import *
 
 # filling up the logs
 
@@ -32,6 +33,10 @@ constant.info_logger.write_info('i', "Initializing Connections\tEnd")
 constant.info_logger.write_info('i', "Source and Destination locations\tStart")
 
 initialize_src_dest()
+
+# creating scp connections for the different connections
+
+initialize_scp_connection()
 
 # closing the logs at the last after all write operations has been done
 
