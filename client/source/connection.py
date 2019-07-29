@@ -3,7 +3,7 @@ import paramiko
 from logger import *
 import sys
 from sys import platform
-
+from scp import SCPClient
 
 class Location:
     source = ""
@@ -25,7 +25,9 @@ class Connection:
     ssh_port = 22
     client = paramiko.SSHClient()
     is_up = False
+    scp_established = False
     src_dest = []
+    scp_connection = None
 
     def __init__(self, ip_address, user, passkey):
         self.ip_address = ip_address
@@ -63,13 +65,26 @@ class Connection:
         client.load_system_host_keys()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         try:
-            ssh = client.connect(ip_address, self.ssh_port, user_name, password)
+            client.connect(ip_address, self.ssh_port, user_name, password)
+            # scp = SCPClient(client.get_transport())
+            # scp.put("C:\\Users\\vhowdhur\\Desktop\\hi", "/home/vibaswan/Desktop/", recursive=True)
+            self.scp_established = True
+            self.scp_connection = client
+            return client
         except:
             constant.error_logger.write_info('e', 'Could not establish scp connection with client {}'
                                              .format(self.ip_address))
-            sys.exit()
-        return ssh
+            # sys.exit()
+            return None
         # ssh = create_sshclient(server, port, user, password)
         # scp = SCPClient(ssh.get_transport())
 
-# def transfer():
+    def transfer_data_to_client(self, src_dest_obj, client):
+        scp = SCPClient(client.get_transport())
+        for src_dst in src_dest_obj:
+            if src_dst.source_exist:
+                scp.put(str(src_dst.source), str(src_dst.destination), recursive=True)
+            else:
+                constant.error_logger.write_info('e', 'the source file {} does not exist so data transfer failed'
+                                                 .format(self.ip_address))
+        print('aaa')

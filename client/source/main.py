@@ -36,16 +36,17 @@ def main():
 
     initialize_src_dest()
 
-    # closing the logs at the last after all write operations has been done
-
-    constant.info_logger.write_info('i', "Main End!")
-
     # creating scp connections for the different connections
 
     initialize_scp_connection()
 
+    # transferring the information to the respective clients
+
+    transfer_data()
+
     # closing the logs at the last after all write operations has been done
 
+    constant.info_logger.write_info('i', "Main End!")
     constant.error_logger.write_info('i', "Main End!")
     constant.info_logger.file_fp.close()
     constant.error_logger.file_fp.close()

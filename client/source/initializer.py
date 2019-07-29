@@ -54,6 +54,7 @@ def initialize_connections():
 
 def reader_thread_task(connection_ob, i):
     i = str(i)
+    connection_ob.src_dest = []
     constant.info_logger.write_info('w', "Starting Thread {}".format(i))
     if not os.path.exists("../config/path_mapper/{}".format(connection_ob.ip_address) + ".json"):
         constant.info_logger.write_info('e', "Path Mapper file is absent!\nAborting Thread " + i)
@@ -122,4 +123,41 @@ def initialize_scp_connection():
         t.start()
 
     for t in scp_connection_list:
+        t.join()
+
+
+def data_transfer_thread(connection_ob, scp_client_ob, i):
+
+    constant.info_logger.write_info('w', "Starting Data transfer Thread {}".format(str(i)))
+    constant.info_logger.write_info('w', "Initialising data transfer to client {}"
+                                    .format(str(connection_ob.ip_address)))
+
+    # calling function to initialize scp connection from connections.py
+    if connection_ob.scp_established:
+        connection_ob.transfer_data_to_client(connection_ob.src_dest, connection_ob.scp_connection)
+
+        constant.info_logger.write_info('w', "Data Transfer to client {} is successful"
+                                        .format(str(connection_ob.ip_address)))
+        constant.info_logger.write_info('w', "Ending Thread {}".format(str(i)))
+    else:
+        constant.info_logger.write_info('w', "Data Transfer to client {} was unsuccessful as scp connection "
+                                             "was not established".format(str(connection_ob.ip_address)))
+        constant.info_logger.write_info('e', "Data Transfer to client {} was unsuccessful as scp connection "
+                                             "was not established".format(str(connection_ob.ip_address)))
+        constant.info_logger.write_info('w', "Ending Thread {}".format(str(i)))
+
+
+def transfer_data():
+
+    data_transfer_list = []
+    for i in range(0, len(constant.connection_list)):
+        t = threading.Thread(target=data_transfer_thread, args=(constant.connection_list[i],
+                                                                constant.scp_connections_list[i], i), name=i)
+        t.setDaemon(True)
+        data_transfer_list.append(t)
+
+    for t in data_transfer_list:
+        t.start()
+
+    for t in data_transfer_list:
         t.join()
