@@ -3,12 +3,10 @@
 
 from constants import *
 import configparser
-import io
 import threading
 from connection import *
 import sys
 from logger import *
-import re
 import json
 
 
@@ -26,8 +24,7 @@ def initialize_config_file():
     constant.address_mapper_path = config['DEFAULT']['address_mapper_path']
     constant.connection_info_path = config['DEFAULT']['connection_info_path']
 
-
-
+    
 def initialize_connections():
 
     if not os.path.exists(constant.connection_info_path):
@@ -36,8 +33,8 @@ def initialize_connections():
         sys.exit()
 
     else:
-        with open(constant.connection_info_path, "r") as file:
-            connection_file = json.load(file)
+        with open(constant.connection_info_path, "r") as file1:
+            connection_file = json.load(file1)
 
         for obj in connection_file:
             connection_obj = Connection(obj['ip_address'], obj['user'], obj['passkey'])
@@ -70,8 +67,10 @@ def reader_thread_task(connection_ob, i):
         for obj in path_mapper_file:
             loc = Location(obj['src'], obj['dest'])
             if not os.path.exists(obj['src']):
-                constant.info_logger.write_info('w', "[Thread " + i + "]Source Path {} does not exist!".format(obj['src']))
-                constant.error_logger.write_info('w', "[Thread " + i + "]Source Path {} does not exist!".format(obj['src']))
+                constant.info_logger.write_info('w', "[Thread " + i + "]Source Path {} "
+                                                                      "does not exist!".format(obj['src']))
+                constant.error_logger.write_info('w', "[Thread " + i + "]Source Path {} "
+                                                                       "does not exist!".format(obj['src']))
                 loc.source_exist = False
             else:
                 constant.info_logger.write_info('i', "[Thread " + i + "]Source Path {} exist!".format(obj['src']))
@@ -93,4 +92,34 @@ def initialize_src_dest():
         t.start()
 
     for t in Thread_List:
+        t.join()
+
+
+def scp_thread_task(connection_ob, i):
+
+    constant.info_logger.write_info('w', "Starting Thread {}".format(str(i)))
+    constant.info_logger.write_info('w', "Initialising scp connection of client {}"
+                                    .format(str(connection_ob.ip_address)))
+
+    # calling function to initialize scp connection from connections.py
+    scp_connection = connection_ob.create_scp_connection(str(connection_ob.ip_address), str(connection_ob.user),
+                                        str(connection_ob.passkey))
+    constant.scp_connections_list.append(scp_connection)
+    constant.info_logger.write_info('w', "Initialising scp connection of client {} is successful"
+                                    .format(str(connection_ob.ip_address)))
+    constant.info_logger.write_info('w', "Ending Thread {}".format(str(i)))
+
+
+def initialize_scp_connection():
+
+    scp_connection_list = []
+    for i in range(0, len(constant.connection_list)):
+        t = threading.Thread(target=scp_thread_task, args=(constant.connection_list[i], i), name=i)
+        t.setDaemon(True)
+        scp_connection_list.append(t)
+
+    for t in scp_connection_list:
+        t.start()
+
+    for t in scp_connection_list:
         t.join()

@@ -4,8 +4,12 @@ from initializer import *
 
 from logger import *
 
+<<<<<<< HEAD
 def main():
     # filling up the logs
+=======
+from connection import *
+>>>>>>> bf1f228bd8f08151b336a659d0321226bf788e0e
 
     # IF NOTHING IS PRESENT THEN CREATE FOLDERS, FILES AND SO ON
 
@@ -35,7 +39,15 @@ def main():
 
     # closing the logs at the last after all write operations has been done
 
+<<<<<<< HEAD
     constant.info_logger.write_info('i', "Main End!")
+=======
+# creating scp connections for the different connections
+
+initialize_scp_connection()
+
+# closing the logs at the last after all write operations has been done
+>>>>>>> bf1f228bd8f08151b336a659d0321226bf788e0e
 
     constant.error_logger.write_info('i', "Main End!")
 
